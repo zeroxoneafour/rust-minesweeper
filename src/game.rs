@@ -3,7 +3,7 @@
 use std::fmt;
 use rand;
 
-pub use crossterm::event;
+pub use crossterm::{event, style::{Color, Stylize}};
 
 #[derive(Copy, Clone)]
 enum TileType {
@@ -30,13 +30,13 @@ impl fmt::Display for Tile {
         let tile = match self.state {
             TileState::Revealed => {
                 match self.tiletype {
-                    TileType::Clear => "_".to_string(),
-                    TileType::Close(x) => x.to_string(),
+                    TileType::Clear => format!("{}", " ".on(Color::DarkYellow)),
+                    TileType::Close(x) => format!("{}", x.to_string().with(Color::Black).on(Color::White)),
                     TileType::Mine => "O".to_string(),
                 }
             },
-            TileState::Marked => "X".to_string(),
-            TileState::Hidden => "█".to_string(),
+            TileState::Marked => format!("{}", "X".with(Color::DarkRed).on(Color::Green)),
+            TileState::Hidden => format!("{}", " ".on(Color::Green)),
         };
         write!(f, "{}", tile)
     }
@@ -200,7 +200,7 @@ impl fmt::Display for Game {
             ret.push_str(" ");
         }
         for _ in 0..(self.width + 2) {
-            ret.push_str("#");
+            ret.push_str(&format!("{}", "#".reset().bold()));
         }
         for _ in 0..boundary_right {
             ret.push_str(" ");
@@ -211,13 +211,13 @@ impl fmt::Display for Game {
             for _ in 0..self.state.boundary_left {
                 ret.push_str(" ");
             }
-            ret.push_str("#");
+            ret.push_str(&format!("{}", "#".reset().bold()));
             // actual map (most of the conversion has been hoisted off to Tile::Display)
             for j in 0..self.width {
                 ret.push_str(&format!("{}", self.map[(i*self.width + j) as usize]))
             }
             // side border and padding
-            ret.push_str("#");
+            ret.push_str(&format!("{}", "#".reset().bold()));
             for _ in 0..boundary_right {
                 ret.push_str(" ");
             }
@@ -227,7 +227,7 @@ impl fmt::Display for Game {
             ret.push_str(" ");
         }
         for _ in 0..(self.width + 2) {
-            ret.push_str("#");
+            ret.push_str(&format!("{}", "#".reset().bold()));
         }
         for _ in 0..boundary_right {
             ret.push_str(" ");
@@ -334,8 +334,7 @@ fn dig_tile(game: &mut Game) -> Status {
                     row < game.height as i32
                 {
                     let coord = get_coord_vec((column as u32, row as u32), game.width) as u32;
-                    if game.mines.contains(&coord) {
-                        let index = game.mines.iter().position(move |&x| x == coord).unwrap();
+                    if let Some(index) = game.mines.iter().position(move |&x| x == coord) {
                         game.mines.remove(index);
                     }
                 }
@@ -414,7 +413,8 @@ fn minesweeper(map: &Vec<Tile>, cursor_vec: usize, width: u32, height: u32) -> V
     ret
 }
 
-// tests for game
+// tests for game - deprecated
+/*
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -432,3 +432,4 @@ mod tests {
         assert!(marked.eq(&String::from("X")));
     }
 }
+*/
