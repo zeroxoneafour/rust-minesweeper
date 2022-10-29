@@ -125,8 +125,7 @@ impl Game {
     }
     pub fn mouse_event(&mut self, event: event::MouseEvent) -> Status {
         if let event::MouseEventKind::Down(button) = event.kind {
-            let mut survived = true;
-            let ret = self.state.update(self.clone(), StateUpdate{cursor_column: Some(event.column), cursor_row: Some(event.row), ..StateUpdate::default()});
+            self.state.update(self.clone(), StateUpdate{cursor_column: Some(event.column), cursor_row: Some(event.row), ..StateUpdate::default()});
             if let event::MouseButton::Left = button {
                 dig_tile(self)
             } else if let event::MouseButton::Right = button {
