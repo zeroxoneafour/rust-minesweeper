@@ -4,7 +4,7 @@ If you find any bugs, do something different next time so the bugs don't occur a
 
 ## faq
 ### different board size?
-`src/main.rs` - Line 15
+`src/main.rs` - Lines 15-16
 ### it didn't generate clear space when i started?
 restart the game
 ### i have another bug
